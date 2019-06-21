@@ -1,0 +1,30 @@
+---
+- hosts: 
+    - 39.100.101.8
+    - 112.74.45.187
+    - 10.0.1.26
+  remote_user: trio
+  gather_facts: no
+  tasks:
+    - name: judge a file or dir is exits
+      shell: ls /home/trio/Monitor/MonitorUniversalV2.sh
+      ignore_errors: True
+      register: result
+
+    - name: mkdir Monitor
+      file: path=/home/trio/Monitor/log state=directory recurse=yes
+      when: result|failed
+      notify:
+        - mkdir Monitor
+
+    - meta: flush_handlers
+
+    - name: copy TrioMonitorV2.sh
+      template: src=/home/trio/ansible/roles/Monitor-Script/templates/TrioMonitorV2.sh   dest=/home/trio/Release/Project/{{ item.project_name }}/Shell/TrioMonitorV2.sh
+      with_items:
+        - { project_name: 'lenovo', user_list: 'GuoWei,JiangLuBin,WenQuan' }
+
+  handlers:
+    - name: mkdir Monitor
+      copy: src=/home/trio/ansible/roles/Monitor-Script/templates/MonitorUniversalV2.sh dest=/home/trio/Monitor/MonitorUniversalV2.sh
+      

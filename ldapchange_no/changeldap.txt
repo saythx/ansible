@@ -1,0 +1,11 @@
+cp /etc/sysconfig/authconfig /etc/sysconfig/authconfig.20190521.bak
+vim /etc/sysconfig/authconfig
+
+cp /etc/nsswitch.conf /etc/nsswitch.conf.20190521.bak
+vim /etc/nsswitch.conf
+
+cp /etc/pam.d/system-auth /etc/pam.d/system-auth.20190521.bak
+vim /etc/pam.d/system-auth
+
+cp /etc/pam.d/password-auth /etc/pam.d/password-auth.20190521.bak
+vim /etc/pam.d/password-auth

@@ -1,0 +1,20 @@
+---
+- hosts: 
+    - 39.100.101.8
+    - 112.74.45.187
+    - 10.0.1.26
+  remote_user: trio
+  gather_facts: no
+  tasks:
+    - name: copy start monitor script
+      template: src=/home/trio/ansible/roles/Monitor-Script/templates/monitor_switch.sh dest=/home/trio/Release/Project/{{ item.project_name }}/Shell/monitor_switch.sh
+      with_items:
+        - { project_name: 'lenovo' }
+      notify:
+        - Start Monitor
+
+  handlers:
+    - name: Start Monitor
+      shell: "nohup /bin/bash /home/trio/Release/Project/{{ item.project_name }}/Shell/monitor_switch.sh &"
+      with_items:
+        - { project_name: 'lenovo' }

@@ -1,0 +1,58 @@
+---
+- hosts: aly_zjk_cbot
+  remote_user: trio
+  serial: 1
+  gather_facts: no
+  tasks:
+    - name: wget update tar file
+      get_url: url=ftp://10.0.3.44/pub/{{ project_name }}/{{ update_filename }}  dest=/home/trio/Release/Project/
+      tags: bjidc
+      notify: 
+        - wget update tar file finished
+
+    - meta: flush_handlers
+
+    - name: copy update tar file
+      unarchive: src=/home/trio/ansible/roles/Project_Update/files/{{ update_filename }}  dest=/home/trio/Release/Project/  copy=yes
+      tags: aliyun
+
+    - name: stop monitor
+      shell: cd /home/trio/Release/Project/{{ project_name }}/Shell && sh TrioMonitorV2.sh stop
+      tags: bjidc,aliyun
+      ignore_errors: yes
+
+    - name: stop all server
+      shell: cd /home/trio/Release/Project/{{ project_name }}/Shell && ./all.sh stop
+      when:  server_flag  == "allserver"
+      tags: bjidc,aliyun
+      ignore_errors: yes
+
+    - name: start all server
+      shell: cd /home/trio/Release/Project/{{ project_name }}/Shell && ./all.sh start
+      when:  server_flag  == "allserver"
+      tags: bjidc,aliyun
+      ignore_errors: yes
+
+    - name: stop server
+      shell: cd /home/trio/Release/Project/{{ project_name }}/Shell && ./run.sh stop {{ server_name }}
+      when:  server_flag  == "singleserver"
+      tags: bjidc,aliyun
+      ignore_errors: yes
+
+
+    - name: start server
+      shell: cd /home/trio/Release/Project/{{ project_name }}/Shell && ./run.sh start {{ server_name }}
+      when:  server_flag  == "singleserver"
+      tags: bjidc,aliyun
+      ignore_errors: yes
+
+    - name: start monitor
+      shell: "( cd /home/trio/Release/Project/{{ project_name }}/Shell && /bin/sh TrioMonitorV2.sh start & )"
+      tags: bjidc,aliyun
+      async: 5
+      poll: 2
+
+  handlers:
+    - name: wget update tar file finished
+      unarchive: src=/home/trio/Release/Project/{{ update_filename }} dest=/home/trio/Release/Project/  copy=no
+      tags: bjidc

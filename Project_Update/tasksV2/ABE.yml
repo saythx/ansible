@@ -1,0 +1,10 @@
+---
+- hosts: 10.0.3.41
+  remote_user: trio
+  gather_facts: no
+  tasks:
+    - name: wget update tar file
+      get_url: url=ftp://10.0.3.44/pub/{{ project_name }}/{{ update_filename }}  dest=/home/trio/ansible/roles/Project_Update/files/
+  #    async: 0
+  #    poll: 60
+      tags: aliyun

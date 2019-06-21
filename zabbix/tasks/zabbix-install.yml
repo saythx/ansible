@@ -1,0 +1,14 @@
+---
+- hosts: phone_server
+  remote_user: trio
+  tasks:
+    - unarchive: src=/home/trio/ansible/roles/zabbix/files/zabbix_agentd.tar.gz dest=/home/trio/ copy=yes
+
+    - name: copy zabbix finished
+      template: src=/home/trio/ansible/roles/zabbix/templates/zabbix_agentd.conf dest=/home/trio/zabbix/etc/zabbix_agentd.conf
+      notify:
+        - copy zabbix_agentd.conf finished
+
+  handlers:
+    - name: copy zabbix_agentd.conf finished
+      shell: /home/trio/zabbix/scripts/zabbix_agentd_restart.sh
